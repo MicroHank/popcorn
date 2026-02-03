@@ -31,14 +31,36 @@
             background: #000;
         }
 
-        /* Animated Background */
+        /* Container for Split Screen */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .top-section {
+            flex: 0 0 75%; /* Top 75% for images */
+            position: relative;
+            background: #111;
+            overflow: hidden;
+        }
+
+        .bottom-section {
+            flex: 0 0 25%; /* Bottom 25% for text */
+            position: relative;
+            background: #000;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* Animated Background for Bottom Section */
         .bg-container {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: 0;
             background: var(--dark-gradient);
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
@@ -50,12 +72,32 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* Image Carousel Styling */
+        #imageCarousel {
+            height: 100%;
+            width: 100%;
+        }
+
+        #imageCarousel .carousel-inner, 
+        #imageCarousel .carousel-item {
+            height: 100%;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Shows full image */
+            background: #000;
+        }
+
         /* Full Screen Carousel */
         #textCarousel {
-            height: 100vh;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            z-index: 1;
         }
 
         .carousel-inner {
@@ -74,22 +116,21 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 0 15%;
+            padding: 0 10%;
             max-width: 1400px;
             margin: 0 auto;
         }
 
         .funny-text {
-            font-size: 5rem;
-            font-weight: 900;
+            font-size: 3rem;
+            font-weight: 800;
             color: #fff;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-shadow: 0 5px 20px rgba(0,0,0,0.5);
             line-height: 1.2;
-            margin-bottom: 2rem;
-            letter-spacing: 0.3rem;
+            margin-bottom: 1rem;
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
         }
 
         .active .funny-text {
@@ -99,73 +140,87 @@
 
         .badge-brand {
             background: var(--primary-gradient);
-            padding: 10px 25px;
+            padding: 5px 15px;
             border-radius: 50px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #000;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-            transform: scale(0.9);
-            transition: transform 0.5s ease;
-        }
-
-        .active .badge-brand {
-            transform: scale(1);
         }
 
         /* Ambient Elements */
         .circle {
             position: absolute;
             border-radius: 50%;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.5;
+            filter: blur(60px);
+            z-index: 0;
+            opacity: 0.3;
         }
 
         .circle-1 {
-            width: 400px;
-            height: 400px;
+            width: 250px;
+            height: 250px;
             background: #FF6B6B;
-            top: -100px;
-            right: -100px;
+            top: -50px;
+            right: 10%;
             animation: move 20s infinite alternate;
         }
 
         .circle-2 {
-            width: 300px;
-            height: 300px;
+            width: 200px;
+            height: 200px;
             background: #FFD93D;
             bottom: -50px;
-            left: -50px;
+            left: 10%;
             animation: move 15s infinite alternate-reverse;
         }
 
         @keyframes move {
             from { transform: translate(0, 0); }
-            to { transform: translate(100px, 100px); }
+            to { transform: translate(50px, 50px); }
         }
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .funny-text {
-                font-size: 2.5rem;
+                font-size: 1.8rem;
             }
             .badge-brand {
-                font-size: 1rem;
+                font-size: 0.9rem;
+            }
+            .top-section {
+                flex: 0 0 70%;
+            }
+            .bottom-section {
+                flex: 0 0 30%;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-container"></div>
-    <div class="circle circle-1"></div>
-    <div class="circle circle-2"></div>
+    <div class="main-container">
+        <!-- Top Section: Image Carousel -->
+        <div class="top-section">
+            <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="8000">
+                <div class="carousel-inner" id="imageCarouselContent">
+                    <!-- Images will be injected by JS -->
+                </div>
+            </div>
+        </div>
 
-    <div id="textCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
-        <div class="carousel-inner" id="carouselContent">
-            <!-- Content will be injected by JS -->
+        <!-- Bottom Section: Text Carousel -->
+        <div class="bottom-section">
+            <div class="bg-container"></div>
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+
+            <div id="textCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+                <div class="carousel-inner" id="carouselContent">
+                    <!-- Content will be injected by JS -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -177,7 +232,6 @@
         $(document).ready(function() {
             /** 
              * 手動添加文字區塊
-             * 你可以在這裡自由增加或刪除句子
              */
             const sentences = [
                 "我們是一群遊手好閒的，潮州人",
@@ -218,30 +272,68 @@
                 "所以我們窮得只剩下甜"
             ];
 
-            const $container = $('#carouselContent');
+            // 圖片列表 (自動從 images/ 資料夾獲取，這裡手動列出)
+            const images = [
+                "50元的爆米花_是天上掉下來的禮物.png",
+                "AI做的音樂就是狂.png",
+                "什麼減肥_我聽不到.png",
+                "吃爆米花不喝飲料_你是怕胖還是省錢.png",
+                "姊吃的不是熱量_是快樂.png",
+                "媽_我偷吃甜食_但是你管不到哩.png",
+                "小孩吃了就不哭.png",
+                "您終究要吃爆米花的_為什麼不一開始就買.png",
+                "我們是遊手好閒的潮州人.png",
+                "我們比爆米花還甜.png",
+                "我們的爆米花跟別人不一樣_我們很好笑.png",
+                "我可愛到買了一份.png",
+                "我就爛但爆米花很讚.png",
+                "我沒消費只是路過.png",
+                "我女朋友的香水_不可能比爆米花還要香.png",
+                "我男朋友的嘴巴_不可能比爆米花還要甜.png",
+                "打卡沒送爆米花.png",
+                "沒什麼營養_但喝起來很爽.png",
+                "減肥留給健身房的人_爆米花請留給我.png",
+                "距離百年老店只差99年多了.png",
+                "阿我賺你的錢又怎麼了.png"
+            ];
+
+            const $textContainer = $('#carouselContent');
+            const $imageContainer = $('#imageCarouselContent');
             
-            // 動態生成輪播項目
+            // 生成文字輪播項目
             sentences.forEach((text, index) => {
                 const isActive = index === 0 ? 'active' : '';
-                
-                // 自動將逗號（半形或全形）替換為換行符號 <br>
-                // 如果你想要特定地方換行，也可以直接在陣列文字中寫 <br>
                 const processedText = text.replace(/[，,]/g, '<br>');
-                
                 const slideHtml = `
                     <div class="carousel-item ${isActive}">
                         <div class="content-wrapper">
-                            <div class="badge-brand">🍿 Popcorn Team</div>
                             <h1 class="funny-text">${processedText}</h1>
                         </div>
                     </div>
                 `;
-                $container.append(slideHtml);
+                $textContainer.append(slideHtml);
             });
 
-            // 初始化輪播
-            const myCarousel = document.querySelector('#textCarousel');
-            const carousel = new bootstrap.Carousel(myCarousel, {
+            // 生成圖片輪播項目
+            images.forEach((imgName, index) => {
+                const isActive = index === 0 ? 'active' : '';
+                const slideHtml = `
+                    <div class="carousel-item ${isActive}">
+                        <img src="images/${imgName}" alt="${imgName}">
+                    </div>
+                `;
+                $imageContainer.append(slideHtml);
+            });
+
+            // 初始化圖片輪播 (6秒切換)
+            new bootstrap.Carousel(document.querySelector('#imageCarousel'), {
+                interval: 6000,
+                ride: 'carousel',
+                pause: false
+            });
+
+            // 初始化文字輪播 (6秒切換)
+            new bootstrap.Carousel(document.querySelector('#textCarousel'), {
                 interval: 6000,
                 ride: 'carousel',
                 touch: true,
