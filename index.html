@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爆米花團隊 - 搞笑文字輪播</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="爆米花團隊的搞笑文字輪播，帶給您歡樂與美味。">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    
+    <!-- Google Fonts: Outfit (Modern and Clean) -->
+    <link href="assets/fonts/css2.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #FF6B6B 0%, #FFD93D 100%);
+            --secondary-gradient: linear-gradient(135deg, #6BCB77 0%, #4D96FF 100%);
+            --dark-gradient: linear-gradient(135deg, #1e1e2f 0%, #121212 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            background: #000;
+        }
+
+        /* Animated Background */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--dark-gradient);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Full Screen Carousel */
+        #textCarousel {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-inner {
+            height: 100%;
+        }
+
+        .carousel-item {
+            height: 100%;
+            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        .content-wrapper {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 15%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .funny-text {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            letter-spacing: 0.3rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .active .funny-text {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .badge-brand {
+            background: var(--primary-gradient);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            transform: scale(0.9);
+            transition: transform 0.5s ease;
+        }
+
+        .active .badge-brand {
+            transform: scale(1);
+        }
+
+        /* Ambient Elements */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .circle-1 {
+            width: 400px;
+            height: 400px;
+            background: #FF6B6B;
+            top: -100px;
+            right: -100px;
+            animation: move 20s infinite alternate;
+        }
+
+        .circle-2 {
+            width: 300px;
+            height: 300px;
+            background: #FFD93D;
+            bottom: -50px;
+            left: -50px;
+            animation: move 15s infinite alternate-reverse;
+        }
+
+        @keyframes move {
+            from { transform: translate(0, 0); }
+            to { transform: translate(100px, 100px); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .funny-text {
+                font-size: 2.5rem;
+            }
+            .badge-brand {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-container"></div>
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+
+    <div id="textCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+        <div class="carousel-inner" id="carouselContent">
+            <!-- Content will be injected by JS -->
+        </div>
+    </div>
+
+    <!-- jQuery & Bootstrap JS -->
+    <script src="assets/jquery/jquery-3.7.1.min.js"></script>
+    <script src="assets/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+
+    <script id="mainScript">
+        $(document).ready(function() {
+            /** 
+             * 手動添加文字區塊
+             * 你可以在這裡自由增加或刪除句子
+             */
+            const sentences = [
+                "我們是一群遊手好閒的，潮州人",
+                "聽說擺攤很賺錢",
+                "我們是一個想在年街賺錢的爆米花團隊",
+                "阿我就運氣好抽到籤",
+                "我賺你的錢又怎麼了",
+                "我要你的錢，你要我的爆米花",
+                "我們只想騙你50元",
+                "我們的爆米花跟別人不同，我們的很好笑",
+                "別人的比較便宜，一定是我們的比較貴",
+                "買貴絕不退差價，因為我們的快樂不退費",
+                "買貴退差價，不是在我們這裡",
+                "您終究要吃爆米花的，那為什麼不一開始就買",
+                "先苦不一定後甜，但爆米花一定很甜",
+                "山不在高 有仙則靈，我爆米花 50 就行",
+                "距離百年老店只差99年多了",
+                "老闆不講武德，只講五十元",
+                "猶豫不決會讓你更餓，還會讓我們沒賺錢",
+                "我就爛 但爆米花很讚",
+                "吃爆米花不喝飲料，你是怕胖還是沒錢",
+                "飲料沒什麼營養，但喝起來很爽",
+                "給自己一個亂花錢的機會，這才叫做過年",
+                "再忙~~也要賣你一份",
+                "雖然吃爆米花不會變聰明，但可以讓我們賺錢",
+                "你女朋友的香水，不可能比爆米花還要香",
+                "你男朋友的嘴，不可能比爆米花還要甜",
+                "聽說吃甜的不好，趕快來吃一份壓壓驚",
+                "哥吃的不是人生，是50元的價值",
+                "姊吃的不是熱量，是快樂的堅持",
+                "人生已經夠酸，爆米花必須要甜",
+                "你出錢我出力，創造年街好景氣",
+                "不要騙自己在減肥，來吃一份吧",
+                "外縣市來的一律 50 元",
+                "我知道你薪水少，所以一份只賣 50",
+                "我老闆的兒子要出國留學，而我只留在這裡賣爆米花",
+                "我們爆米花沒有什麼優點，就是一直加糖",
+                "所以我們窮得只剩下甜"
+            ];
+
+            const $container = $('#carouselContent');
+            
+            // 動態生成輪播項目
+            sentences.forEach((text, index) => {
+                const isActive = index === 0 ? 'active' : '';
+                
+                // 自動將逗號（半形或全形）替換為換行符號 <br>
+                // 如果你想要特定地方換行，也可以直接在陣列文字中寫 <br>
+                const processedText = text.replace(/[，,]/g, '<br>');
+                
+                const slideHtml = `
+                    <div class="carousel-item ${isActive}">
+                        <div class="content-wrapper">
+                            <div class="badge-brand">🍿 Popcorn Team</div>
+                            <h1 class="funny-text">${processedText}</h1>
+                        </div>
+                    </div>
+                `;
+                $container.append(slideHtml);
+            });
+
+            // 初始化輪播
+            const myCarousel = document.querySelector('#textCarousel');
+            const carousel = new bootstrap.Carousel(myCarousel, {
+                interval: 6000,
+                ride: 'carousel',
+                touch: true,
+                pause: false
+            });
+        });
+    </script>
+</body>
+</html>
