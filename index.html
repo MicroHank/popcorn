@@ -40,14 +40,14 @@
         }
 
         .top-section {
-            flex: 0 0 75%; /* Top 75% for images */
+            flex: 0 0 85%; /* Increased from 75% to make images wider without cropping */
             position: relative;
             background: #111;
             overflow: hidden;
         }
 
         .bottom-section {
-            flex: 0 0 25%; /* Bottom 25% for text */
+            flex: 0 0 15%; /* Decreased to give more room to images */
             position: relative;
             background: #000;
             border-top: 1px solid var(--glass-border);
@@ -86,7 +86,7 @@
         .carousel-item img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Shows full image */
+            object-fit: contain; /* Shows full image without cropping */
             background: #000;
         }
 
@@ -111,18 +111,18 @@
 
         .content-wrapper {
             height: 100%;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 0 10%;
-            max-width: 1400px;
+            padding: 0 5%;
             margin: 0 auto;
         }
 
         .funny-text {
-            font-size: 3rem;
+            font-size: 4rem;
             font-weight: 800;
             color: #fff;
             text-shadow: 0 5px 20px rgba(0,0,0,0.5);
@@ -131,6 +131,8 @@
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.6s ease-out;
+            letter-spacing: 0.3rem;
+            white-space: nowrap;
         }
 
         .active .funny-text {
@@ -190,10 +192,10 @@
                 font-size: 0.9rem;
             }
             .top-section {
-                flex: 0 0 70%;
+                flex: 0 0 80%;
             }
             .bottom-section {
-                flex: 0 0 30%;
+                flex: 0 0 20%;
             }
         }
     </style>
@@ -203,7 +205,7 @@
     <div class="main-container">
         <!-- Top Section: Image Carousel -->
         <div class="top-section">
-            <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
+            <div id="imageCarousel" class="carousel slide">
                 <div class="carousel-inner" id="imageCarouselContent">
                     <!-- Images will be injected by JS -->
                 </div>
@@ -216,7 +218,7 @@
             <div class="circle circle-1"></div>
             <div class="circle circle-2"></div>
 
-            <div id="textCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="6000">
+            <div id="textCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner" id="carouselContent">
                     <!-- Content will be injected by JS -->
                 </div>
@@ -237,14 +239,13 @@
                 "我們是一群遊手好閒的  潮州人",
                 "聽說擺攤很賺錢",
                 "我們是一個想在年街賺錢的爆米花團隊",
-                "阿我就運氣好抽到籤",
+                "阿我就運氣好抽到籤 不然你要怎麼樣？",
                 "我賺你的錢又怎麼了",
                 "我要你的錢  你要我的爆米花",
                 "我們只想騙你50元",
                 "我們的爆米花跟別人不同  我們的很好笑",
                 "別人的比較便宜  一定是我們的比較貴",
                 "買貴絕不退差價  因為我們的快樂不退費",
-                "買貴退差價  不是在我們這裡",
                 "您終究要吃爆米花的  那為什麼不一開始就買",
                 "先苦不一定後甜  但爆米花一定很甜",
                 "山不在高 有仙則靈  我爆米花 50 就行",
@@ -252,13 +253,12 @@
                 "老闆不講武德  只講五十元",
                 "猶豫不決會讓你更餓  還會讓我們沒賺錢",
                 "我台積電賣飛在600 只好來賣爆米花",
-                "台積電600元你不買 華邦電20元你沒買，爆米花 50 元你到底買不買？",
-                "投資台股你可能會損失五萬，但買我們的爆米花 你只會損失 50 元",
-                "我就爛 但爆米花很讚",
+                "爆米花 50 元  你到底買不買？",
+                "我就爛！但爆米花很讚",
                 "吃爆米花不配飲料  你是怕胖還是沒錢？",
                 "我們的年終就靠你們了",
                 "飲料沒什麼營養  但喝起來很爽",
-                "給自己一個亂花錢的機會  這才叫做過年",
+                "給自己一個亂花錢的機會  這樣才叫做過年",
                 "再忙  也要賣你一份",
                 "雖然吃爆米花不會變聰明  但可以讓我們賺錢",
                 "你女朋友的香水  不可能比爆米花還要香",
@@ -271,11 +271,11 @@
                 "不要騙自己在減肥  今天吃一份就好",
                 "外縣市來的一律 50 元",
                 "我知道你薪水少  所以一份只賣 50",
-                "我老闆的兒子要出國留學，而我只留在這裡賣爆米花",
-                "我們爆米花沒有什麼優點，就是一直加糖",
+                "老闆的兒子要出國留學  我只留在這裡賣爆米花",
+                "我們爆米花沒有什麼優點  就是一直加糖",
                 "所以我們窮得只剩下甜",
-                "你看到的輪播程式/音樂/圖片都是 AI 做的，有問題 肯定不是我的問題",
-                "爆米花是我們炸的，如果不好吃 想必是你的品味問題"
+                "程式/音樂/圖片都是 AI 做的  有問題肯定不是我的問題",
+                "爆米花是我們炸的 如果不好吃  是你的品味問題"
             ];
 
             // 圖片列表 (從 images/ 資料夾獲取，這裡手動列出)
@@ -293,7 +293,7 @@
             // 生成文字輪播項目
             sentences.forEach((text, index) => {
                 const isActive = index === 0 ? 'active' : '';
-                const processedText = text.replace(/[，,]/g, '<br>');
+                const processedText = text;
                 const slideHtml = `
                     <div class="carousel-item ${isActive}">
                         <div class="content-wrapper">
@@ -324,7 +324,7 @@
 
             // 初始化文字輪播 (6秒切換)
             new bootstrap.Carousel(document.querySelector('#textCarousel'), {
-                interval: 6000,
+                interval: 2000,
                 ride: 'carousel',
                 touch: true,
                 pause: false
