@@ -189,9 +189,9 @@
     <div class="container">
         <div class="header-section">
             <h1>過年爆米花梗文大賞</h1>
-            <p>爆米花團隊出動！選出最讓你印象深刻的 3 句話</p>
+            <p>爆米花團隊出動！選出最讓你印象深刻的 5 句話</p>
             <div class="d-flex justify-content-center gap-2 mb-3">
-                <div class="vote-stats" id="selected-count">已選擇：0 / 3</div>
+                <div class="vote-stats" id="selected-count">已選擇：0 / 5</div>
                 <button class="btn btn-outline-warning btn-sm rounded-pill px-3" id="view-results" style="height: 42px; border: 1px solid var(--glass-border); color: #aaa;">查看即時戰況</button>
             </div>
         </div>
@@ -283,8 +283,8 @@
                     $(this).removeClass('selected');
                     selectedJokes = selectedJokes.filter(item => item.id !== id);
                 } else {
-                    if (selectedJokes.length >= 3) {
-                        alert("最多只能選 3 個最喜歡的喔！");
+                    if (selectedJokes.length >= 5) {
+                        alert("最多只能選 5 個最喜歡的喔！");
                         return;
                     }
                     $(this).addClass('selected');
@@ -295,7 +295,7 @@
             });
 
             function updateUI() {
-                $('#selected-count').text(`已選擇：${selectedJokes.length} / 3`);
+                $('#selected-count').text(`已選擇：${selectedJokes.length} / 5`);
                 $('#submit-vote').prop('disabled', selectedJokes.length === 0);
             }
 
