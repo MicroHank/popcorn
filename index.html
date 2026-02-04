@@ -51,6 +51,7 @@
             position: relative;
             background: #000;
             border-top: 1px solid var(--glass-border);
+            margin-top: 10px;
         }
 
         /* Animated Background for Bottom Section */
@@ -183,8 +184,54 @@
             to { transform: translate(50px, 50px); }
         }
 
+        .ai-info-badge {
+            position: absolute;
+            top: 30px;
+            left: 10px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .ai-info-badge h6 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #FFD93D;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .ai-info-badge p {
+            margin: 5px 0 0 0;
+            font-size: 1.8rem;
+            font-weight: 500;
+            line-height: 1.4;
+            letter-spacing: 1px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
+            .ai-info-badge {
+                top: 15px;
+                left: 15px;
+                padding: 10px 15px;
+            }
+            .ai-info-badge p {
+                font-size: 0.9rem;
+            }
             .funny-text {
                 font-size: 1.8rem;
             }
@@ -205,6 +252,14 @@
     <div class="main-container">
         <!-- Top Section: Image Carousel -->
         <div class="top-section">
+            <!-- AI Info Badge -->
+            <div class="ai-info-badge">
+                <h6>使用 AI 完成的是</h6>
+                <p>音樂<br>圖片<br>海報<br>菜單<br>手拿板<br>輪播程式</p>
+                <h6>我們自己完成的是</h6>
+                <p>歌詞<br>圖文字<br>炸爆米花<br>備料+設備<br>賺你們的錢</p>
+            </div>
+            
             <div id="imageCarousel" class="carousel slide">
                 <div class="carousel-inner" id="imageCarouselContent">
                     <!-- Images will be injected by JS -->
@@ -254,9 +309,9 @@
                 "猶豫不決會讓你更餓  還會讓我們沒賺錢",
                 "我台積電賣飛在600 只好來賣爆米花",
                 "爆米花 50 元  你到底買不買？",
+                "我們的年終就靠你們了",
                 "我就爛！但爆米花很讚",
                 "吃爆米花不配飲料  你是怕胖還是沒錢？",
-                "我們的年終就靠你們了",
                 "飲料沒什麼營養  但喝起來很爽",
                 "給自己一個亂花錢的機會  這樣才叫做過年",
                 "再忙  也要賣你一份",
@@ -269,12 +324,13 @@
                 "人生已經夠酸  爆米花必須要甜",
                 "你出錢我出力  創造年街好景氣",
                 "不要騙自己在減肥  今天吃一份就好",
-                "外縣市來的一律 50 元",
-                "我知道你薪水少  所以一份只賣 50",
+                "薪水少的人  一份只要 50 元",
+                "薪水多的人  請驕傲地告訴我們你買兩份",
+                "外縣市來的朋友  一份特價 50 元",
                 "老闆的兒子要出國留學  我只留在這裡賣爆米花",
                 "我們爆米花沒有什麼優點  就是一直加糖",
                 "所以我們窮得只剩下甜",
-                "程式/音樂/圖片都是 AI 做的  有問題肯定不是我的問題",
+                "你能想像吧？網頁/海報/看板  都是 AI 做的",
                 "爆米花是我們炸的 如果不好吃  是你的品味問題"
             ];
 
@@ -315,16 +371,16 @@
                 $imageContainer.append(slideHtml);
             });
 
-            // 初始化圖片輪播 (6秒切換)
+            // 初始化圖片輪播 (7秒切換)
             new bootstrap.Carousel(document.querySelector('#imageCarousel'), {
-                interval: 6000,
+                interval: 7000,
                 ride: 'carousel',
                 pause: false
             });
 
-            // 初始化文字輪播 (6秒切換)
+            // 初始化文字輪播 (5秒切換)
             new bootstrap.Carousel(document.querySelector('#textCarousel'), {
-                interval: 2000,
+                interval: 5000,
                 ride: 'carousel',
                 touch: true,
                 pause: false
