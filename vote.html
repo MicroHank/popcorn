@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>過年爆米花梗文大賞 - 爆米花團隊</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="assets/fonts/css2.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #FF6B6B 0%, #FFD93D 100%);
+            --dark-bg: #121212;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-color: #FFD93D;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #fff;
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 217, 61, 0.1) 0%, transparent 40%);
+        }
+
+        .container {
+            max-width: 800px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header-section h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .header-section p {
+            font-size: 1.2rem;
+            color: #aaa;
+        }
+
+        .vote-stats {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+        }
+
+        #joke-list {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .joke-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 20px 25px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .joke-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .joke-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .joke-card.selected {
+            background: rgba(255, 107, 107, 0.15);
+            border-color: #FF6666;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.2);
+        }
+
+        .joke-card.selected::before {
+            opacity: 1;
+        }
+
+        .joke-card .number {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #555;
+            margin-right: 20px;
+            min-width: 25px;
+        }
+
+        .vote-count {
+            background: rgba(255, 217, 61, 0.2);
+            color: #FFD93D;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-left: 10px;
+            display: none; /* Hidden by default, shown after loading */
+            border: 1px solid rgba(255, 217, 61, 0.3);
+        }
+
+        .joke-card.selected .number {
+            color: #FF6B6B;
+        }
+
+        .joke-content {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .submit-container {
+            position: sticky;
+            bottom: 30px;
+            text-align: center;
+            z-index: 100;
+        }
+
+        #submit-vote {
+            background: var(--primary-gradient);
+            color: #000;
+            border: none;
+            padding: 15px 45px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #submit-vote:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.5);
+        }
+
+        #submit-vote:disabled {
+            background: #444;
+            color: #777;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-section h1 { font-size: 2rem; }
+            .joke-content { font-size: 1rem; }
+            #submit-vote { width: 90%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>過年爆米花梗文大賞</h1>
+            <p>爆米花團隊出動！選出最讓你噴笑的 3 個梗</p>
+            <div class="d-flex justify-content-center gap-2 mb-3">
+                <div class="vote-stats" id="selected-count">已選擇：0 / 3</div>
+                <button class="btn btn-outline-warning btn-sm rounded-pill px-3" id="view-results" style="height: 42px; border: 1px solid var(--glass-border); color: #aaa;">查看即時戰況</button>
+            </div>
+        </div>
+
+        <div id="joke-list">
+            <!-- 梗文將由 JS 動態生成 -->
+        </div>
+
+        <div class="submit-container">
+            <button id="submit-vote" disabled>立即送出投票</button>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="assets/jquery/jquery-3.7.1.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const sentences = [
+                "我們是一群遊手好閒的  潮州人",
+                "聽說擺攤很賺錢",
+                "我們是一個想在年街賺錢的爆米花團隊",
+                "阿我就運氣好抽到籤 不然你要怎麼樣？",
+                "我賺你的錢又怎麼了",
+                "我要你的錢  你要我的爆米花",
+                "我們只想騙你50元",
+                "我們的爆米花跟別人不同  我們的很好笑",
+                "別人的比較便宜  一定是我們的比較貴",
+                "買貴絕不退差價  因為我們的快樂不退費",
+                "您終究要吃爆米花的  那為什麼不一開始就買",
+                "先苦不一定後甜  但爆米花一定很甜",
+                "山不在高 有仙則靈  我爆米花 50 就行",
+                "距離百年老店只差99年360天了",
+                "老闆不講武德  只講五十元",
+                "猶豫不決會讓你更餓  還會讓我們沒賺錢",
+                "我台積電賣飛在600 只好來賣爆米花",
+                "爆米花 50 元  你到底買不買？",
+                "我們的年終就靠你們了",
+                "我就爛！但爆米花很讚",
+                "吃爆米花不配飲料  你是怕胖還是沒錢？",
+                "飲料沒什麼營養  但喝起來很爽",
+                "給自己一個亂花錢的機會  這樣才叫做過年",
+                "再忙  也要賣你一份",
+                "雖然吃爆米花不會變聰明  但可以讓我們賺錢",
+                "你女朋友的香水  不可能比爆米花還要香",
+                "你男朋友的嘴  不可能比爆米花還要甜",
+                "聽說吃甜的不好  趕快來吃一份壓壓驚",
+                "哥吃的不是人生  是50元的價值",
+                "姊吃的不是熱量  是快樂的堅持",
+                "人生已經夠酸  爆米花必須要甜",
+                "你出錢我出力  創造年街好景氣",
+                "不要騙自己在減肥  今天吃一份就好",
+                "薪水少的人  一份只要 50 元",
+                "薪水多的人  請驕傲地告訴我們你買兩份",
+                "外縣市來的朋友  一份特價 50 元",
+                "老闆的兒子要出國留學  我只留在這裡賣爆米花",
+                "我們爆米花沒有什麼優點  就是一直加糖",
+                "所以我們窮得只剩下甜",
+                "你能想像吧？網頁/海報/看板  都是 AI 做的",
+                "爆米花是我們炸的 如果不好吃  是你的品味問題"
+            ];
+
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbyM84HKRiVMpo2R9x4CWTGDf8dEsn8527APoAr_eglyXk95Mpzim5QEiYWjXmlHXhILQg/exec";
+                        
+            let selectedJokes = [];
+
+            // 初始化梗文列表
+            function initJokeList() {
+                const $list = $('#joke-list');
+                sentences.forEach((text, index) => {
+                    const cardHtml = `
+                        <div class="joke-card" data-id="${index + 1}" data-text="${text}">
+                            <div class="number">${(index + 1).toString().padStart(2, '0')}</div>
+                            <div class="joke-content">${text}</div>
+                            <div class="vote-count" id="count-${index + 1}">0 票</div>
+                        </div>
+                    `;
+                    $list.append(cardHtml);
+                });
+            }
+
+            initJokeList();
+
+            // 選擇邏輯
+            $(document).on('click', '.joke-card', function() {
+                const id = $(this).data('id');
+                const text = $(this).data('text');
+
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                    selectedJokes = selectedJokes.filter(item => item.id !== id);
+                } else {
+                    if (selectedJokes.length >= 3) {
+                        alert("最多只能選 3 個最喜歡的喔！");
+                        return;
+                    }
+                    $(this).addClass('selected');
+                    selectedJokes.push({ id, text });
+                }
+
+                updateUI();
+            });
+
+            function updateUI() {
+                $('#selected-count').text(`已選擇：${selectedJokes.length} / 3`);
+                $('#submit-vote').prop('disabled', selectedJokes.length === 0);
+            }
+
+            // 送出投票
+            $('#submit-vote').click(async function() {
+                if (selectedJokes.length === 0) return;
+                
+                if (localStorage.getItem('voted')) {
+                    alert("你已經投過票囉！新年快樂，爆米花萬歲！");
+                    return;
+                }
+
+                $(this).prop('disabled', true).text('同步投票數據中...');
+
+                try {
+                    // 取得 IP
+                    const ipData = await $.getJSON('https://api.ipify.org?format=json');
+                    
+                    const postData = {
+                        ip: ipData.ip,
+                        jokes: selectedJokes.map(j => j.id),
+                        jokeTexts: selectedJokes.map(j => j.text) // 額外傳送文字方便對照
+                    };
+
+                    const response = await fetch(GAS_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(postData)
+                    });
+
+                    const result = await response.json();
+                    
+                    alert("投票成功！感謝你的參與，祝你財源滾滾！");
+                    localStorage.setItem('voted', 'true');
+                    location.reload();
+
+                } catch (error) {
+                    console.error("Vote error:", error);
+                    alert("發送失敗，可能是網路不穩或系統忙碌，請稍後再試。");
+                    $(this).prop('disabled', false).text('立即送出投票');
+                }
+            });
+
+            // 讀取票數功能
+            $('#view-results').click(async function() {
+                const $btn = $(this);
+                $btn.text('載入中...').prop('disabled', true);
+                
+                try {
+                    // 向 GAS 發送 GET 請求獲取目前統計
+                    const response = await fetch(`${GAS_URL}?action=getResults`);
+                    const data = await response.json();
+                    
+                    // 假設後端回傳格式為 { "1": 5, "2": 12, ... }
+                    // 如果後端回傳的是原始字串 "2//5//13"，則需要額外處理
+                    
+                    $('.vote-count').show(); // 顯示票數標籤
+                    
+                    // 更新畫面上每一項的票數
+                    // 這裡預期後端已經幫我們加總好了
+                    if (data && typeof data === 'object') {
+                        Object.keys(data).forEach(id => {
+                            $(`#count-${id}`).text(`${data[id]} 票`);
+                        });
+                        alert("已成功載入即時票數！");
+                    } else {
+                        alert("目前還沒有投票數據喔！");
+                    }
+                    
+                    $btn.text('重新整理戰況').prop('disabled', false);
+                } catch (error) {
+                    console.error("Fetch error:", error);
+                    alert("無法讀取票數，請確認 Google Apps Script 的 doGet 是否已實作。");
+                    $btn.text('查看即時戰況').prop('disabled', false);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
