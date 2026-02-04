@@ -40,10 +40,30 @@
         }
 
         .top-section {
-            flex: 0 0 85%; /* Increased from 75% to make images wider without cropping */
-            position: relative;
+            flex: 0 0 85%;
+            display: flex; /* Horizontal layout */
+            flex-direction: row;
             background: #111;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* Combined side panel for information and QR code */
+        .side-info-panel {
+            flex: 0 0 300px; /* Fixed width for text/QR info */
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            /* border-right: 1px solid var(--glass-border); */
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        #imageCarousel {
+            flex: 1; /* Take remaining space */
+            height: 100%;
         }
 
         .bottom-section {
@@ -185,24 +205,17 @@
         }
 
         .ai-info-badge {
-            position: absolute;
-            top: 30px;
-            left: 10px;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            padding: 10px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
             border-radius: 15px;
             border: 1px solid var(--glass-border);
             color: #fff;
-            pointer-events: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             animation: fadeIn 1s ease-out;
         }
 
         .ai-info-badge h6 {
             margin: 0;
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             color: #FFD93D;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -210,33 +223,79 @@
         }
 
         .ai-info-badge p {
-            margin: 5px 0 0 0;
-            font-size: 1.8rem;
+            margin: 8px 0 0 0;
+            font-size: 1.4rem;
             font-weight: 500;
             line-height: 1.4;
             letter-spacing: 1px;
         }
 
+        .vote-qrcode-internal {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .vote-qrcode-internal img {
+            width: 100%;
+            max-width: 180px;
+            aspect-ratio: 1/1;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 2px solid #FFD93D;
+            padding: 5px;
+            background: #fff;
+        }
+
+        .vote-qrcode-internal span {
+            display: block;
+            font-size: 1.1rem;
+            color: #FFD93D;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .ai-info-badge {
-                top: 15px;
-                left: 15px;
-                padding: 10px 15px;
+        @media (max-width: 1024px) {
+            .top-section {
+                flex-direction: column;
+            }
+            .side-info-panel {
+                flex: 0 0 auto;
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                flex-direction: row;
+                gap: 15px;
+                padding: 15px;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+            .ai-info-badge, .vote-qrcode-badge {
+                flex: 0 0 auto;
+                min-width: 250px;
+            }
+            .vote-qrcode-internal img {
+                width: 100px;
+                height: 100px;
             }
             .ai-info-badge p {
+                font-size: 1rem;
+            }
+            .ai-info-badge h6 {
                 font-size: 0.9rem;
             }
+        }
+
+        @media (max-width: 768px) {
             .funny-text {
                 font-size: 1.8rem;
-            }
-            .badge-brand {
-                font-size: 0.9rem;
             }
             .top-section {
                 flex: 0 0 80%;
@@ -252,15 +311,22 @@
     <div class="main-container">
         <!-- Top Section: Image Carousel -->
         <div class="top-section">
-            <!-- AI Info Badge -->
-            <div class="ai-info-badge">
-                <h6>使用 AI 完成的</h6>
-                <p>音樂<br>圖片<br>海報<br>菜單<br>手拿板<br>輪播程式</p>
-                <br>
-                <h6>我們自己完成的</h6>
-                <p>歌詞<br>圖文字<br>炸爆米花<br>備料+設備<br>賺你們的錢</p>
+            <!-- Left Side Info Panel -->
+            <div class="side-info-panel">
+                <div class="ai-info-badge">
+                    <h6>使用 AI 完成的</h6>
+                    <p>音樂/圖片/海報<br>菜單/手拿板<br>輪播程式</p>
+                    <h6 class="mt-3">我們自己完成的</h6>
+                    <p>歌詞/圖文字<br>炸爆米花<br>備料+設備<br>賺你們的錢</p>
+                    
+                    <!-- QR Code integrated at the bottom of the same badge -->
+                    <div class="vote-qrcode-internal">
+                        <img src="vote_qrcode.jpg" alt="投票 QR Code">
+                        <span>爆米花梗文大賞</span>
+                    </div>
+                </div>
             </div>
-            
+
             <div id="imageCarousel" class="carousel slide">
                 <div class="carousel-inner" id="imageCarouselContent">
                     <!-- Images will be injected by JS -->
