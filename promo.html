@@ -50,6 +50,7 @@
             margin: 0;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -65,6 +66,36 @@
         .promo-container img {
             width: 100%;
             display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .promo-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .map-btn {
+            background: var(--secondary-gradient);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(107, 203, 119, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .map-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(107, 203, 119, 0.5);
+            color: #fff;
         }
 
         /* Menu Section */
@@ -157,10 +188,14 @@
 
     <div class="container">
         <!-- Promo Section -->
-        <div class="promo-container">
-            <!-- 使用現有的宣傳圖 -->
-            <img src="images/location.jpg" alt="攤位位置">
-        </div>
+        <a href="https://www.google.com/maps/place/%E5%B1%8F%E6%9D%B1%E7%B8%A3%E6%BD%潮%E5%B7%9E%E9%8E%AE%E6%BD%潮%E5%B7%9E%E5%9C%8B%E6%B0%91%E5%B0%8F%E5%AD%B8/@22.5478281,120.5400663,3a,75y,334.88h,77.4t/data=!3m7!1e1!3m5!1shXkQ5EisCj-LS_GatEiRbA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D12.599999999999994%26panoid%3DhXkQ5EisCj-LS_GatEiRbA%26yaw%3D334.88!7i16384!8i8192!4m7!3m6!1s0x346e21e8c045fcf1:0xd43978c05f4c39ed!8m2!3d22.548743!4d120.541158!10e5!16s%2Fg%2F1tff5b_d?authuser=0&entry=ttu&g_ep=EgoyMDI2MDIwMy4wIKXMDSoKLDEwMDc5MjA2N0gBUAM%3D" target="_blank" class="text-decoration-none">
+            <div class="promo-container">
+                <img src="images/location.jpg" alt="攤位位置">
+            </div>
+            <div class="map-btn">
+                <span>📍</span> 點擊開啟 Google 地圖導航
+            </div>
+        </a>
 
         <!-- Menu Section -->
         <div class="section-title">我的爆米花 Menu</div>
