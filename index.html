@@ -50,15 +50,17 @@
 
         /* Combined side panel for information and QR code */
         .side-info-panel {
-            flex: 0 0 300px; /* Fixed width for text/QR info */
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(20px);
-            /* border-right: 1px solid var(--glass-border); */
-            padding: 30px;
+            flex: 0 0 280px; 
+            background: rgba(15, 15, 25, 0.4); 
+            backdrop-filter: blur(25px) saturate(180%); 
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 15px; /* Reduced top/bottom padding to 15px */
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 12px; /* Reduced gap between items to 12px */
             z-index: 10;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
         }
 
         #imageCarousel {
@@ -204,61 +206,195 @@
             to { transform: translate(50px, 50px); }
         }
 
-        .ai-info-badge {
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 15px; /* Reduced padding from 20px */
+            position: relative;
+            overflow: visible; 
+            transition: all 0.3s ease;
+            min-height: min-content; 
+        }
+
+        .info-card:hover {
             background: rgba(255, 255, 255, 0.05);
-            padding: 15px 20px;
-            border-radius: 15px;
-            border: 1px solid var(--glass-border);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+        }
+
+        .info-card .card-title {
+            font-size: 1.25rem;
             color: #fff;
-            animation: fadeIn 1s ease-out;
+            margin-bottom: 8px; /* Reduced from 15px */
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .ai-info-badge h6 {
-            margin: 0;
-            font-size: 1.1rem;
-            color: #FFD93D;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 700;
-        }
-
-        .ai-info-badge p {
-            margin: 8px 0 0 0;
-            font-size: 1.4rem;
-            font-weight: 500;
+        .info-card .card-content {
+            font-size: 1.5rem;
+            color: #fff; /* Solid white for maximum legibility */
             line-height: 1.4;
+            font-weight: 400;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            word-break: break-word;
+        }
+
+        .info-card .accent-text {
+            color: #FFD93D;
+            font-weight: 600;
+        }
+
+        /* Stats Card Styling */
+        .stats-card {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 20px;
+            padding: 5px;
+            margin-bottom: 5px;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
+        }
+
+        .live-badge {
+            position: relative;
+            top: 10px;
+            left: 10px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            background: #FF6B6B;
+            color: #fff;
+            font-size: 1em;
+            text-align: center;
+            font-weight: 900;
+            padding: 2px 10px;
+            border-radius: 50px;
+            text-transform: uppercase;
             letter-spacing: 1px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px;
+        }
+
+        .stat-item:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            color: #FFD93D;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            text-shadow: 0 0 10px rgba(255, 217, 61, 0.4);
+        }
+
+        .stat-unit {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-left: 5px;
+            font-weight: 400;
         }
 
         .vote-qrcode-internal {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--glass-border);
+            margin-top: 0px; /* Removed margin */
+            padding-top: 0px; /* Removed padding */
             text-align: center;
+            position: relative;
         }
-
+        
+        /* Shimmering Glow for QR Code */
         .vote-qrcode-internal img {
             width: 100%;
             max-width: 180px;
             aspect-ratio: 1/1;
             border-radius: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             border: 2px solid #FFD93D;
             padding: 5px;
             background: #fff;
+            box-shadow: 0 0 15px rgba(255, 217, 61, 0.3);
+            animation: qrglow 3s infinite ease-in-out;
+            transition: transform 0.3s ease;
+        }
+
+        .vote-qrcode-internal img:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes qrglow {
+            0% { box-shadow: 0 0 10px rgba(255, 217, 61, 0.3); border-color: #FFD93D; }
+            50% { box-shadow: 0 0 25px rgba(255, 217, 61, 0.7); border-color: #FF6B6B; }
+            100% { box-shadow: 0 0 10px rgba(255, 217, 61, 0.3); border-color: #FFD93D; }
         }
 
         .vote-qrcode-internal span {
             display: block;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: #FFD93D;
-            font-weight: 700;
-            letter-spacing: 1px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar Styling */
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary-gradient);
+            transition: width 0.1s linear;
+        }
+
+        #imageCarousel .progress-bar-fill {
+            background: var(--secondary-gradient);
+        }
+
+        #textCarousel .progress-bar-fill {
+            background: var(--primary-gradient);
         }
 
         /* Responsive adjustments */
@@ -277,19 +413,20 @@
                 overflow-x: auto;
                 overflow-y: hidden;
             }
-            .ai-info-badge, .vote-qrcode-badge {
+            .info-card {
                 flex: 0 0 auto;
-                min-width: 250px;
+                min-width: 280px;
+                padding: 20px;
             }
             .vote-qrcode-internal img {
                 width: 100px;
                 height: 100px;
             }
-            .ai-info-badge p {
+            .info-card .card-content {
                 font-size: 1rem;
             }
-            .ai-info-badge h6 {
-                font-size: 0.9rem;
+            .info-card .card-title {
+                font-size: 1.1rem;
             }
         }
 
@@ -313,23 +450,46 @@
         <div class="top-section">
             <!-- Left Side Info Panel -->
             <div class="side-info-panel">
-                <div class="ai-info-badge">
-                    <h6>使用 AI 完成的</h6>
-                    <p>音樂/圖片/海報<br>菜單/手拿板<br>輪播程式</p>
-                    <h6 class="mt-3">我們自己完成的</h6>
-                    <p>歌詞/圖文字<br>炸爆米花<br>備料+設備<br>賺你們的錢</p>
-                    
-                    <!-- QR Code integrated at the bottom of the same badge -->
-                    <div class="vote-qrcode-internal">
-                        <img src="vote_qrcode.jpg" alt="投票 QR Code">
-                        <span>爆米花梗文大賞</span>
+                <!-- Real-time Stats -->
+                <div class="stats-card">
+                    <div class="live-badge">LIVE 戰況</div>
+                    <div class="stat-item">
+                        <div class="stat-label">🍿爆米花賣出</div>
+                        <div class="stat-value"><span id="popcornCount">0</span><span class="stat-unit">份</span></div>
                     </div>
+                    <div class="stat-item">
+                        <div class="stat-label">🥤碳酸飲賣出</div>
+                        <div class="stat-value"><span id="sodaCount">0</span><span class="stat-unit">份</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">💰 距離成本</div>
+                        <div class="stat-value"><span id="costCount">0</span><span class="stat-unit">元</span></div>
+                    </div>
+                </div>
+                <!-- Persistence Card -->
+                <div class="info-card">
+                    <div class="card-title">
+                        <span>🔥</span> 爆米花團隊的堅持
+                    </div>
+                    <div class="card-content">
+                        使用 AI <span class="accent-text">設計</span><br>
+                        爆米花<span class="accent-text">加糖</span>再<span class="accent-text">加糖</span><br>
+                        賺<span class="accent-text">你們的錢</span>
+                    </div>
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="vote-qrcode-internal">
+                    <img src="vote_qrcode.jpg" alt="投票 QR Code">
                 </div>
             </div>
 
             <div id="imageCarousel" class="carousel slide">
                 <div class="carousel-inner" id="imageCarouselContent">
                     <!-- Images will be injected by JS -->
+                </div>
+                <div class="progress-bar-container">
+                    <div id="imageProgress" class="progress-bar-fill"></div>
                 </div>
             </div>
         </div>
@@ -343,6 +503,9 @@
             <div id="textCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner" id="carouselContent">
                     <!-- Content will be injected by JS -->
+                </div>
+                <div class="progress-bar-container">
+                    <div id="textProgress" class="progress-bar-fill"></div>
                 </div>
             </div>
         </div>
@@ -359,6 +522,7 @@
              */
             const sentences = [
                 "我們是一群遊手好閒的  潮州人",
+                "圓我一個國內旅行的夢  沒有賺錢只能出國了",
                 "聽說擺攤很賺錢",
                 "我們是一個想在年街賺錢的爆米花團隊",
                 "阿我就運氣好抽到籤 不然你要怎麼樣？",
@@ -398,13 +562,13 @@
                 "我們爆米花沒有什麼優點  就是一直加糖",
                 "所以我們窮得只剩下甜",
                 "你能想像吧？網頁/海報/看板  都是 AI 做的",
-                "爆米花是我們炸的 如果不好吃  是你的品味問題"
+                "爆米花如果不好吃  是你的品味問題"
             ];
 
             // 圖片列表 (從 images/ 資料夾獲取，這裡手動列出)
             const images = [
-                "1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg",
-                "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg",
+                "main.jpg", "main2.jpg", "1.jpg", "2.jpg", "3.jpg", "4.jpg", 
+                "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg",
                 "11.jpg", "12.jpg", "13.png", "14.png", "15.png",
                 "16.png", "17.png", "18.png", "19.jpg", "20.jpg",
                 "21.jpg"
@@ -439,19 +603,76 @@
             });
 
             // 初始化圖片輪播 (7秒切換)
-            new bootstrap.Carousel(document.querySelector('#imageCarousel'), {
-                interval: 7000,
+            const imgInterval = 7000;
+            const $imageCarousel = $('#imageCarousel');
+            const $imageProgress = $('#imageProgress');
+            
+            const imageCarouselInstance = new bootstrap.Carousel(document.querySelector('#imageCarousel'), {
+                interval: imgInterval,
                 ride: 'carousel',
                 pause: false
             });
 
             // 初始化文字輪播 (5秒切換)
-            new bootstrap.Carousel(document.querySelector('#textCarousel'), {
-                interval: 5000,
+            const textInterval = 5000;
+            const $textCarousel = $('#textCarousel');
+            const $textProgress = $('#textProgress');
+
+            const textCarouselInstance = new bootstrap.Carousel(document.querySelector('#textCarousel'), {
+                interval: textInterval,
                 ride: 'carousel',
                 touch: true,
                 pause: false
             });
+
+            // 進度條動畫邏輯
+            function startProgress($progressBar, duration, carouselId) {
+                $progressBar.stop().css('width', '0%');
+                $progressBar.animate({ width: '100%' }, duration, 'linear');
+            }
+
+            // 監聽輪播切換事件來重置進度條
+            document.querySelector('#imageCarousel').addEventListener('slide.bs.carousel', function() {
+                startProgress($imageProgress, imgInterval);
+            });
+
+            document.querySelector('#textCarousel').addEventListener('slide.bs.carousel', function() {
+                startProgress($textProgress, textInterval);
+            });
+
+            // 初始啟動
+            startProgress($imageProgress, imgInterval);
+            startProgress($textProgress, textInterval);
+
+            // 即時戰況邏輯 (透過網址參數控制)
+            function updateLiveStats() {
+                const params = new URLSearchParams(window.location.search);
+                const popcorn = parseInt(params.get('p')) || 0;
+                const soda = parseInt(params.get('s')) || 0;
+                const cost = parseInt(params.get('c')) || 0;
+
+                animateValue("popcornCount", 0, popcorn, 2000);
+                animateValue("sodaCount", 0, soda, 2000);
+                animateValue("costCount", 0, cost, 2000);
+            }
+
+            function animateValue(id, start, end, duration) {
+                if (start === end) return;
+                const obj = document.getElementById(id);
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    obj.innerText = Math.floor(progress * (end - start) + start);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            // 啟動戰況更新
+            updateLiveStats();
         });
     </script>
 </body>
