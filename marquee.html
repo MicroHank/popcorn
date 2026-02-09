@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跑馬燈管理 - 我的爆米花</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    <link href="assets/fonts/css2.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f0f19;
+            color: #fff;
+            font-family: 'Outfit', 'Noto Sans TC', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .admin-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .form-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+        .form-control {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .form-control:focus {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: #FF6B6B;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+            color: #fff;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFD93D 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 12px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-top: 20px;
+        }
+        #status {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-card">
+        <h2 class="text-center mb-4">📢 跑馬燈管理</h2>
+        
+        <div class="mb-3">
+            <label class="form-label">🔑 管理密碼</label>
+            <input type="password" id="password" class="form-control" placeholder="請輸入設定的 SECRET_TOKEN">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">💬 跑馬燈內容</label>
+            <textarea id="marqueeText" class="form-control" rows="3" placeholder="例如：歡迎光臨！今日大份爆米花特價中..."></textarea>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+            <button id="startBtn" class="btn btn-primary flex-grow-1 mt-0">開始 (Start)</button>
+            <button id="stopBtn" class="btn btn-secondary flex-grow-1" style="border-radius: 50px; font-weight: 800;">停止 (Stop)</button>
+        </div>
+
+        <div id="status"></div>
+        <div id="activeIndicator" class="text-center mt-2" style="font-size: 0.9rem; font-weight: 600;"></div>
+        
+        <div class="mt-4 text-center">
+            <a href="index.html" style="color: rgba(255,255,255,0.3); text-decoration: none; font-size: 0.8rem;">返回首頁</a>
+        </div>
+    </div>
+
+    <script src="assets/jquery/jquery-3.7.1.min.js"></script>
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbz5qSfvk-8rtj-VUd66KIoWJtKkxKx5RzNOI6-bF0A6xvhu3rAqHgz6jAu96Bd-Mn8wpA/exec";
+
+        $(document).ready(function() {
+            let isCurrentlyActive = false;
+
+            // 頁面載入時先抓取目前的文字與狀態
+            function refreshStatus() {
+                $.get(`${GAS_URL}?action=getMarquee`, function(data) {
+                    if (data) {
+                        if (data.text) $('#marqueeText').val(data.text);
+                        isCurrentlyActive = data.active;
+                        updateIndicator(isCurrentlyActive);
+                    }
+                });
+            }
+
+            function updateIndicator(isActive) {
+                const $indicator = $('#activeIndicator');
+                if (isActive) {
+                    $indicator.css('color', '#6BCB77').text('● 目前狀態：播放中');
+                } else {
+                    $indicator.css('color', '#999').text('○ 目前狀態：已停止');
+                }
+            }
+
+            refreshStatus();
+
+            function sendUpdate(activeStatus) {
+                const password = $('#password').val();
+                const text = $('#marqueeText').val();
+                const $status = $('#status');
+
+                if (!password) {
+                    $status.css('color', '#FF6B6B').text('❌ 請輸入密碼');
+                    return;
+                }
+
+                $status.css('color', '#FFD93D').text('⏳ 正在同步...');
+                $('#startBtn, #stopBtn').prop('disabled', true);
+
+                $.post(GAS_URL, JSON.stringify({
+                    action: 'updateMarquee',
+                    password: password,
+                    text: text,
+                    active: activeStatus
+                }), function(response) {
+                    const res = JSON.parse(response);
+                    if (res.result === 'success') {
+                        $status.css('color', '#6BCB77').text('✅ 執行成功！');
+                        isCurrentlyActive = activeStatus;
+                        updateIndicator(activeStatus);
+                    } else {
+                        $status.css('color', '#FF6B6B').text('❌ 錯誤：' + res.message);
+                    }
+                }).fail(function() {
+                    $status.css('color', '#FF6B6B').text('❌ 連線伺服器失敗');
+                }).always(function() {
+                    $('#startBtn, #stopBtn').prop('disabled', false);
+                });
+            }
+
+            $('#startBtn').click(function() {
+                sendUpdate(true);
+            });
+
+            $('#stopBtn').click(function() {
+                sendUpdate(false);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -408,6 +408,36 @@
             background: var(--primary-gradient);
         }
 
+        /* Marquee Styling */
+        .marquee-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            transform: translateY(-50%);
+            z-index: 10;
+            padding: 0;
+            overflow: hidden;
+            display: none; /* Hidden by default, shown if text exists and active */
+            pointer-events: none; /* Don't interfere with carousel clicks */
+        }
+
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            font-size: 6rem; /* Prominent size for center display */
+            font-weight: 900;
+            color: #FFD93D;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 217, 61, 0.5);
+            animation: marqueeLoop 25s linear infinite;
+            padding-left: 100%;
+        }
+
+        @keyframes marqueeLoop {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 1024px) {
             .top-section {
@@ -524,6 +554,10 @@
             </div>
 
             <div id="imageCarousel" class="carousel slide">
+                <!-- New Marquee Component -->
+                <div class="marquee-wrapper" id="marqueeWrapper">
+                    <div class="marquee-text" id="marqueeDisplay"></div>
+                </div>
                 <div class="carousel-inner" id="imageCarouselContent">
                     <!-- Images will be injected by JS -->
                 </div>
@@ -753,6 +787,34 @@
             // 啟動戰況更新 (立即執行一次，之後每 60 秒一次)
             fetchSalesData();
             setInterval(fetchSalesData, 60000);
+
+            // 跑馬燈同步邏輯
+            async function fetchMarquee() {
+                try {
+                    const response = await fetch(`${GAS_URL}?action=getMarquee`);
+                    const data = await response.json();
+                    
+                    if (data && data.active && data.text) {
+                        const currentText = $('#marqueeDisplay').text();
+                        if (data.text !== currentText) {
+                            $('#marqueeDisplay').text(data.text);
+                            
+                            // 根據字數調整動畫速度
+                            const duration = Math.max(10, data.text.length * 0.6);
+                            $('#marqueeDisplay').css('animation-duration', `${duration}s`);
+                        }
+                        $('#marqueeWrapper').fadeIn();
+                    } else {
+                        $('#marqueeWrapper').fadeOut();
+                    }
+                } catch (error) {
+                    console.error("Error fetching marquee data:", error);
+                }
+            }
+
+            // 啟動跑馬燈同步 (每 10 秒更新一次)
+            fetchMarquee();
+            setInterval(fetchMarquee, 10000);
         });
     </script>
 </body>
