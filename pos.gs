@@ -31,21 +31,6 @@ function doPost(e) {
       lock.releaseLock();
     }
   }
-  
-  // === Case 2: Submit Vote (vote.html) ===
-  // Legacy support: checks for 'jokes' or 'ip' keys
-  if (params.jokes || params.ip) {
-    var ip = params.ip;
-    var jokes = params.jokes; // Array of IDs
-    
-    // Append vote to the end of the sheet
-    // Columns: Date, IP, JokeIDs (joined by //)
-    sheet.appendRow([new Date(), ip, jokes.join("//")]);
-    
-    return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-  
   return ContentService.createTextOutput(JSON.stringify({"result": "error", "message": "Invalid action"}));
 }
 
@@ -69,40 +54,6 @@ function doGet(e) {
     
     return ContentService.createTextOutput(JSON.stringify(salesData))
       .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  // === Case 2: Get Vote Results (vote.html) ===
-  if (action === 'getResults') {
-    var data = sheet.getDataRange().getValues();
-    var voteCounts = {}; 
-    
-    // Start from row 2 (index 1) to skip header, iterate all rows
-    for (var i = 1; i < data.length; i++) {
-      var row = data[i];
-      // Vote data is expected in Column C (index 2)
-      var jokesString = row[2]; 
-      
-      // Filter out sales rows (which might be at the top) or empty rows
-      // Sales rows have numbers in Col B, maybe empty Col C?
-      // Or we can just check if col A is NOT one of the sales items?
-      // But simpler: if jokesString looks like valid vote data.
-      
-      if (jokesString && typeof jokesString === 'string') {
-        var idList = jokesString.split("//");
-        idList.forEach(function(id) {
-          if (id) {
-            id = id.trim();
-            // Basic validation to ensure it's an ID (number)
-            if (!isNaN(id)) {
-               voteCounts[id] = (voteCounts[id] || 0) + 1;
-            }
-          }
-        });
-      }
-    }
-    return ContentService.createTextOutput(JSON.stringify(voteCounts))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-  
+  }  
   return ContentService.createTextOutput(JSON.stringify({"result": "error", "message": "Unknown action"}));
 }
