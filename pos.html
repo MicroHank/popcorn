@@ -122,7 +122,12 @@
             <!-- Items injected here -->
         </div>
 
-        <div class="d-grid gap-2 mt-4">
+        <div class="mt-4">
+            <label class="form-label text-muted small mb-1">🔑 管理密碼</label>
+            <input type="password" id="pos-password" class="form-control rounded-pill mb-3" placeholder="輸入 SECRET_TOKEN">
+        </div>
+
+        <div class="d-grid gap-2">
             <button id="btn-force-save" class="btn btn-primary btn-lg rounded-pill">立即儲存</button>
             <button id="btn-reload" class="btn btn-outline-secondary rounded-pill">重新讀取</button>
         </div>
@@ -188,6 +193,12 @@
 
         // Logic
         $(document).ready(function () {
+            // Load saved password
+            const savedPassword = localStorage.getItem('pos_password');
+            if (savedPassword) {
+                $('#pos-password').val(savedPassword);
+            }
+
             renderItems();
             loadSalesData();
 
@@ -264,8 +275,16 @@
             setStatus('正在儲存...');
 
             try {
+                const password = $('#pos-password').val();
+                if (!password) {
+                    throw new Error('請輸入管理密碼');
+                }
+                // Save password for convenience
+                localStorage.setItem('pos_password', password);
+
                 const payload = {
                     action: 'updateSales',
+                    password: password,
                     sales: salesState
                 };
 
