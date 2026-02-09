@@ -418,14 +418,17 @@
             z-index: 10;
             padding: 0;
             overflow: hidden;
-            display: none; /* Hidden by default, shown if text exists and active */
-            pointer-events: none; /* Don't interfere with carousel clicks */
+            display: none;
+            /* Hidden by default, shown if text exists and active */
+            pointer-events: none;
+            /* Don't interfere with carousel clicks */
         }
 
         .marquee-text {
             display: inline-block;
             white-space: nowrap;
-            font-size: 6rem; /* Prominent size for center display */
+            font-size: 6rem;
+            /* Prominent size for center display */
             font-weight: 900;
             color: #FFD93D;
             text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 217, 61, 0.5);
@@ -434,8 +437,13 @@
         }
 
         @keyframes marqueeLoop {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
         }
 
         /* Responsive adjustments */
@@ -635,17 +643,20 @@
                 "我們爆米花沒有什麼優點  就是一直加糖",
                 "所以我們窮得只剩下甜",
                 "爆米花如果不好吃  是你的品味問題",
+                "沒賣冬瓜茶  因為我們沒有時間煮茶",
+                "你的 Code 會掛  我的爆米花很炸",
+                "AI 需要電力和算力  你需要熱量原力",
                 "網頁/海報/手拿板/音樂  by Gemini AI"
             ];
 
             // 圖片列表 (從不同資料夾獲取，這裡手動列出)
             const imageLibrary = {
                 images: [
-                    "main.jpg", "main2.jpg", "1.jpg", "2.jpg", "3.jpg", "4.jpg",
+                    "main.jpg", "discount.jpg", "1.jpg", "2.jpg", "3.jpg", "4.jpg",
                     "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg",
                     "11.jpg", "12.jpg", "13.png", "14.png", "15.png",
                     "16.png", "17.png", "18.png", "19.jpg", "20.jpg",
-                    "21.jpg"
+                    "21.jpg", "22.png", "23.png"
                 ],
                 customer: [
                     "1.jpg", "2.jpg"
@@ -714,7 +725,7 @@
             // 初始化與事件監聽
             updateImageCarousel('images');
 
-            $('#folderSelect').on('change', function() {
+            $('#folderSelect').on('change', function () {
                 updateImageCarousel($(this).val());
             });
 
@@ -793,12 +804,12 @@
                 try {
                     const response = await fetch(`${GAS_URL}?action=getMarquee`);
                     const data = await response.json();
-                    
+
                     if (data && data.active && data.text) {
                         const currentText = $('#marqueeDisplay').text();
                         if (data.text !== currentText) {
                             $('#marqueeDisplay').text(data.text);
-                            
+
                             // 根據字數調整動畫速度
                             const duration = Math.max(10, data.text.length * 0.6);
                             $('#marqueeDisplay').css('animation-duration', `${duration}s`);
