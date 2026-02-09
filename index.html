@@ -445,6 +445,42 @@
                 flex: 0 0 20%;
             }
         }
+
+        /* Folder Selector Styling */
+        .folder-selector-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 5px;
+        }
+
+        .folder-selector-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .custom-select {
+            width: 100%;
+            background: #1e1e2f;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .custom-select:focus {
+            border-color: #FF6B6B;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+        }
     </style>
 </head>
 
@@ -476,10 +512,15 @@
                     </div>
                 </div>
 
-                <!-- QR Code Section -->
-                <!-- <div class="vote-qrcode-internal">
-                    <img src="qrcode_promo.jpg" alt="攤位介紹 QR Code">
-                </div> -->
+                <!-- Folder Selector -->
+                <div class="folder-selector-container">
+                    <label class="folder-selector-label">🖼️ 輪播照片</label>
+                    <select id="folderSelect" class="custom-select">
+                        <option value="images">梗文金句</option>
+                        <option value="customer">客人互動</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
             </div>
 
             <div id="imageCarousel" class="carousel slide">
@@ -563,14 +604,22 @@
                 "網頁/海報/手拿板/音樂  by Gemini AI"
             ];
 
-            // 圖片列表 (從 images/ 資料夾獲取，這裡手動列出)
-            const images = [
-                "main.jpg", "main2.jpg", "1.jpg", "2.jpg", "3.jpg", "4.jpg",
-                "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg",
-                "11.jpg", "12.jpg", "13.png", "14.png", "15.png",
-                "16.png", "17.png", "18.png", "19.jpg", "20.jpg",
-                "21.jpg"
-            ];
+            // 圖片列表 (從不同資料夾獲取，這裡手動列出)
+            const imageLibrary = {
+                images: [
+                    "main.jpg", "main2.jpg", "1.jpg", "2.jpg", "3.jpg", "4.jpg",
+                    "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg",
+                    "11.jpg", "12.jpg", "13.png", "14.png", "15.png",
+                    "16.png", "17.png", "18.png", "19.jpg", "20.jpg",
+                    "21.jpg"
+                ],
+                customer: [
+                    "1.jpg", "2.jpg"
+                ],
+                other: [
+                    "1.jpg"
+                ]
+            };
 
             const $textContainer = $('#carouselContent');
             const $imageContainer = $('#imageCarouselContent');
@@ -589,16 +638,33 @@
                 $textContainer.append(slideHtml);
             });
 
-            // 生成圖片輪播項目
-            images.forEach((imgName, index) => {
-                const isActive = index === 0 ? 'active' : '';
-                const slideHtml = `
-                    <div class="carousel-item ${isActive}">
-                        <img src="images/${imgName}" alt="${imgName}">
-                    </div>
-                `;
-                $imageContainer.append(slideHtml);
-            });
+            /**
+             * 更新圖片輪播項目
+             * @param {string} type - images, customer, or other
+             */
+            function updateImageCarousel(type) {
+                const imageList = imageLibrary[type] || [];
+                $imageContainer.empty();
+
+                if (imageList.length === 0) {
+                    $imageContainer.append('<div class="carousel-item active"><div class="content-wrapper"><h3>暫無照片</h3></div></div>');
+                    return;
+                }
+
+                imageList.forEach((imgName, index) => {
+                    const isActive = index === 0 ? 'active' : '';
+                    const slideHtml = `
+                        <div class="carousel-item ${isActive}">
+                            <img src="${type}/${imgName}" alt="${imgName}">
+                        </div>
+                    `;
+                    $imageContainer.append(slideHtml);
+                });
+
+                // 重置輪播實例
+                imageCarouselInstance.to(0);
+                startProgress($imageProgress, imgInterval);
+            }
 
             // 初始化圖片輪播 (7秒切換)
             const imgInterval = 7000;
@@ -609,6 +675,13 @@
                 interval: imgInterval,
                 ride: 'carousel',
                 pause: false
+            });
+
+            // 初始化與事件監聽
+            updateImageCarousel('images');
+
+            $('#folderSelect').on('change', function() {
+                updateImageCarousel($(this).val());
             });
 
             // 初始化文字輪播 (5秒切換)
