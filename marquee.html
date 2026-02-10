@@ -81,6 +81,14 @@
             <button id="stopBtn" class="btn btn-secondary flex-grow-1" style="border-radius: 50px; font-weight: 800;">停止 (Stop)</button>
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">✨ 特效發送 (Special Effects)</label>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-outline-info effect-btn flex-grow-1" data-effect="confetti" style="border-radius: 20px;">🌸 賀成交</button>
+                <button class="btn btn-outline-light effect-btn flex-grow-1" data-effect="snow" style="border-radius: 20px;">❄️ 沒人要買</button>
+            </div>
+        </div>
+
         <div id="status"></div>
         <div id="activeIndicator" class="text-center mt-2" style="font-size: 0.9rem; font-weight: 600;"></div>
         
@@ -158,6 +166,39 @@
 
             $('#stopBtn').click(function() {
                 sendUpdate(false);
+            });
+
+            $('.effect-btn').click(function() {
+                const effect = $(this).data('effect');
+                const password = $('#password').val();
+                const $status = $('#status');
+
+                if (!password) {
+                    $status.css('color', '#FF6B6B').text('❌ 請輸入密碼');
+                    return;
+                }
+
+                $status.css('color', '#FFD93D').text('⏳ 正在發送特效...');
+                $(this).prop('disabled', true);
+
+                $.post(GAS_URL, JSON.stringify({
+                    action: 'updateMarquee',
+                    password: password,
+                    text: $('#marqueeText').val(),
+                    active: isCurrentlyActive,
+                    effect: effect
+                }), function(response) {
+                    const res = JSON.parse(response);
+                    if (res.result === 'success') {
+                        $status.css('color', '#6BCB77').text('✅ 特效發送成功！');
+                    } else {
+                        $status.css('color', '#FF6B6B').text('❌ 錯誤：' + res.message);
+                    }
+                }).fail(function() {
+                    $status.css('color', '#FF6B6B').text('❌ 連線伺服器失敗');
+                }).always(() => {
+                    $(this).prop('disabled', false);
+                });
             });
         });
     </script>

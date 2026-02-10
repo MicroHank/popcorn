@@ -519,12 +519,139 @@
             border-color: #FF6B6B;
             box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
         }
+
+        /* Effects Layer */
+        #effectsCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .snow-particle {
+            position: fixed;
+            top: -10px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.8;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) translateX(20px);
+            }
+        }
+
+        /* Congratulations Text */
+        #congratulationsText {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 15rem;
+            font-weight: 900;
+            color: #ffffff;
+            /* Shimmering Gold/White Glow */
+            text-shadow: 
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 30px #FFD700,
+                0 0 40px #FFD700,
+                0 0 70px #FFD700,
+                0 0 80px #FFD700,
+                0 0 100px #FFD700;
+            z-index: 10000;
+            pointer-events: none;
+            display: none;
+            white-space: nowrap;
+            letter-spacing: 2rem;
+            animation: shimmer 2s infinite alternate;
+        }
+
+        @keyframes shimmer {
+            from {
+                text-shadow: 
+                    0 0 10px #fff,
+                    0 0 20px #fff,
+                    0 0 30px #FFD700,
+                    0 0 40px #FFD700,
+                    0 0 70px #FFD700,
+                    0 0 80px #FFD700,
+                    0 0 100px #FFD700;
+            }
+            to {
+                text-shadow: 
+                    0 0 20px #fff,
+                    0 0 30px #fff,
+                    0 0 40px #ff00de,
+                    0 0 70px #ff00de,
+                    0 0 80px #ff00de,
+                    0 0 100px #ff00de,
+                    0 0 150px #ff00de;
+            }
+        }
+
+        @keyframes popup {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeOutZoom {
+            from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            to { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+
+        /* Sad Text for Snow */
+        #sadText {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            font-weight: 900;
+            color: #ff0000;
+            /* Strong outline + Glow */
+            text-shadow: 
+                4px 4px 0 #000,
+                -4px -4px 0 #000,
+                4px -4px 0 #000,
+                -4px 4px 0 #000,
+                0 0 50px rgba(255, 0, 0, 0.9);
+            z-index: 10000;
+            pointer-events: none;   
+            display: none;
+            white-space: nowrap;
+            filter: none;
+            animation: sadDrift 10s ease-in-out forwards;
+        }
+
+        @keyframes sadDrift {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            5% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            10% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            /* Shivering / Trembling phase */
+            15%, 25%, 35%, 45%, 55%, 65%, 75%, 85% { transform: translate(-50.5%, -50.5%) rotate(-1deg); }
+            20%, 30%, 40%, 50%, 60%, 70%, 80% { transform: translate(-49.5%, -49.5%) rotate(1deg); }
+            90% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -30%) scale(1.5); opacity: 0; }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="main-container">
+        <!-- Effects Overlay -->
+        <canvas id="effectsCanvas"></canvas>
+        <div id="congratulationsText">賀成交</div>
+        <div id="sadText">怎麼都沒人要買啦</div>
         <!-- Top Section: Image Carousel -->
         <div class="top-section">
             <!-- Left Side Info Panel -->
@@ -799,33 +926,143 @@
             fetchSalesData();
             setInterval(fetchSalesData, 60000);
 
-            // 跑馬燈同步邏輯
+            // 跑馬燈與特效同步邏輯
+            let lastEffectTime = 0;
+
             async function fetchMarquee() {
                 try {
                     const response = await fetch(`${GAS_URL}?action=getMarquee`);
                     const data = await response.json();
 
-                    if (data && data.active && data.text) {
-                        const currentText = $('#marqueeDisplay').text();
-                        if (data.text !== currentText) {
-                            $('#marqueeDisplay').text(data.text);
-
-                            // 根據字數調整動畫速度
-                            const duration = Math.max(10, data.text.length * 0.6);
-                            $('#marqueeDisplay').css('animation-duration', `${duration}s`);
+                    if (data) {
+                        // 1. 處理特效
+                        if (data.effect && data.effectTime > lastEffectTime) {
+                            triggerEffect(data.effect);
+                            lastEffectTime = data.effectTime;
                         }
-                        $('#marqueeWrapper').fadeIn();
-                    } else {
-                        $('#marqueeWrapper').fadeOut();
+
+                        // 2. 處理文字跑馬燈
+                        if (data.active && data.text) {
+                            const currentText = $('#marqueeDisplay').text();
+                            if (data.text !== currentText) {
+                                $('#marqueeDisplay').text(data.text);
+
+                                // 根據字數調整動畫速度
+                                const duration = Math.max(10, data.text.length * 0.6);
+                                $('#marqueeDisplay').css('animation-duration', `${duration}s`);
+                            }
+                            $('#marqueeWrapper').fadeIn();
+                        } else {
+                            $('#marqueeWrapper').fadeOut();
+                        }
                     }
                 } catch (error) {
                     console.error("Error fetching marquee data:", error);
                 }
             }
 
-            // 啟動跑馬燈同步 (每 10 秒更新一次)
+            // 特效觸發邏輯
+            function triggerEffect(effectType) {
+                console.log("Triggering effect:", effectType);
+                if (effectType === 'confetti') {
+                    startConfetti();
+                } else if (effectType === 'snow') {
+                    startSnow();
+                }
+            }
+
+            // --- 特效實作 ---
+            const canvas = document.getElementById('effectsCanvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            function startConfetti() {
+                // Show Congratulations Text
+                const $text = $('#congratulationsText');
+                $text.show().css({
+                    animation: 'popup 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
+                });
+
+                // Particles
+                particles = [];
+                for (let i = 0; i < 200; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height - canvas.height,
+                        r: Math.random() * 6 + 4,
+                        d: Math.random() * 150,
+                        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                        tilt: Math.random() * 10 - 10,
+                        tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+                        tiltAngle: 0
+                    });
+                }
+                animateConfetti();
+            }
+
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+                particles.forEach((p, i) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.d);
+                    p.tilt = Math.sin(p.tiltAngle) * 15;
+
+                    if (p.y <= canvas.height) alive = true;
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                if (alive) requestAnimationFrame(animateConfetti);
+                else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // Fade out text after particles finish
+                    $('#congratulationsText').css({
+                        animation: 'fadeOutZoom 1s ease-in forwards'
+                    });
+                    setTimeout(() => $('#congratulationsText').hide(), 1000);
+                }
+            }
+
+            function startSnow() {
+                // Show Sad Text
+                const $text = $('#sadText');
+                $text.show().css({
+                    animation: 'drift 10s ease-in-out forwards'
+                });
+                setTimeout(() => $text.hide(), 10000);
+
+                for (let i = 0; i < 100; i++) {
+                    const snow = $('<div class="snow-particle"></div>');
+                    const size = Math.random() * 5 + 2;
+                    snow.css({
+                        left: Math.random() * 100 + 'vw',
+                        width: size + 'px',
+                        height: size + 'px',
+                        'animation-duration': (Math.random() * 3 + 2) + 's',
+                        'animation-delay': (Math.random() * 5) + 's'
+                    });
+                    $('body').append(snow);
+                    setTimeout(() => snow.remove(), 10000);
+                }
+            }
+
+            // 啟動同步 (每 5 秒更新一次，提高特效反應速度)
             fetchMarquee();
-            setInterval(fetchMarquee, 10000);
+            setInterval(fetchMarquee, 5000);
         });
     </script>
 </body>
