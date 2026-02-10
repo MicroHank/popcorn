@@ -73,6 +73,22 @@
             transform: scale(1.05);
         }
 
+        .video-container {
+            margin-bottom: 30px;
+            border-radius: 25px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #000;
+            line-height: 0;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
         .map-btn {
             background: var(--secondary-gradient);
             color: #fff;
@@ -190,6 +206,14 @@
         <!-- Popcorn 真實照片 -->
         <div class="promo-container">
             <img src="images/popcorn.jpg" alt="爆米花真實照片">
+        </div>
+
+        <!-- 爆米花宣傳影片 -->
+        <div class="video-container">
+            <video autoplay loop muted playsinline>
+                <source src="video/popcorn.mp4" type="video/mp4">
+                您的瀏覽器不支援影片標籤。
+            </video>
         </div>
 
         <!-- Menu Section -->
