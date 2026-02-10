@@ -194,6 +194,44 @@
             color: #FF6B6B;
             font-weight: 700;
         }
+
+        /* Music Toggle Button */
+        .music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .music-toggle.playing .music-icon {
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .music-icon {
+            font-size: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -311,7 +349,72 @@
         </div>
     </div>
 
+    <!-- Audio Element -->
+    <audio id="bg-music" loop preload="auto" autoplay>
+        <source src="video/popcorn_song.m4a" type="audio/mp4">
+    </audio>
+
+    <!-- Music Toggle Button -->
+    <div id="music-btn" class="music-toggle">
+        <span class="music-icon">🎵</span>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="assets/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const audio = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                musicBtn.classList.remove('playing');
+                musicBtn.querySelector('.music-icon').textContent = '🔇';
+            } else {
+                audio.play().then(() => {
+                    musicBtn.classList.add('playing');
+                    musicBtn.querySelector('.music-icon').textContent = '🎵';
+                    isPlaying = true;
+                }).catch(e => {
+                    console.log('Autoplay prevented:', e);
+                });
+            }
+            if (audio.paused) {
+                isPlaying = false;
+            } else {
+                isPlaying = true;
+            }
+        }
+
+        musicBtn.addEventListener('click', toggleMusic);
+
+        // Try to play immediately (might work on some devices/older browsers)
+        window.addEventListener('load', () => {
+            audio.play().then(() => {
+                musicBtn.classList.add('playing');
+                isPlaying = true;
+            }).catch(e => {
+                console.log('Initial autoplay blocked, waiting for interaction.');
+            });
+        });
+
+        // Fallback: Try to autoplay on any user interaction
+        const startAutoplay = () => {
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    musicBtn.classList.add('playing');
+                    musicBtn.querySelector('.music-icon').textContent = '🎵';
+                    isPlaying = true;
+                    document.removeEventListener('click', startAutoplay);
+                    document.removeEventListener('touchstart', startAutoplay);
+                }).catch(e => console.log('Interaction play blocked:', e));
+            }
+        };
+
+        document.addEventListener('click', startAutoplay);
+        document.addEventListener('touchstart', startAutoplay);
+    </script>
 </body>
 </html>
