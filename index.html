@@ -367,54 +367,72 @@
         const musicBtn = document.getElementById('music-btn');
         let isPlaying = false;
 
-        function toggleMusic() {
-            if (isPlaying) {
-                audio.pause();
+        // Force reload audio to ensure it's ready
+        audio.load();
+
+        function updateUI(playing) {
+            isPlaying = playing;
+            if (playing) {
+                musicBtn.classList.add('playing');
+                musicBtn.querySelector('.music-icon').textContent = '🎵';
+            } else {
                 musicBtn.classList.remove('playing');
                 musicBtn.querySelector('.music-icon').textContent = '🔇';
-            } else {
-                audio.play().then(() => {
-                    musicBtn.classList.add('playing');
-                    musicBtn.querySelector('.music-icon').textContent = '🎵';
-                    isPlaying = true;
-                }).catch(e => {
-                    console.log('Autoplay prevented:', e);
-                });
-            }
-            if (audio.paused) {
-                isPlaying = false;
-            } else {
-                isPlaying = true;
             }
         }
 
-        musicBtn.addEventListener('click', toggleMusic);
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                updateUI(false);
+            } else {
+                audio.play().then(() => {
+                    updateUI(true);
+                }).catch(e => {
+                    console.log('Playback blocked:', e);
+                });
+            }
+        }
 
-        // Try to play immediately (might work on some devices/older browsers)
-        window.addEventListener('load', () => {
-            audio.play().then(() => {
-                musicBtn.classList.add('playing');
-                isPlaying = true;
-            }).catch(e => {
-                console.log('Initial autoplay blocked, waiting for interaction.');
-            });
+        musicBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMusic();
         });
 
-        // Fallback: Try to autoplay on any user interaction
-        const startAutoplay = () => {
+        // Robust Interaction Unlocker
+        const unlockAudio = () => {
             if (!isPlaying) {
                 audio.play().then(() => {
-                    musicBtn.classList.add('playing');
-                    musicBtn.querySelector('.music-icon').textContent = '🎵';
-                    isPlaying = true;
-                    document.removeEventListener('click', startAutoplay);
-                    document.removeEventListener('touchstart', startAutoplay);
-                }).catch(e => console.log('Interaction play blocked:', e));
+                    updateUI(true);
+                    // Successfully started, remove all unlock listeners
+                    removeUnlockListeners();
+                }).catch(e => {
+                    console.log('Still blocked or failed:', e);
+                });
             }
         };
 
-        document.addEventListener('click', startAutoplay);
-        document.addEventListener('touchstart', startAutoplay);
+        const events = ['click', 'touchstart', 'scroll', 'mousedown', 'keydown'];
+        
+        function removeUnlockListeners() {
+            events.forEach(event => {
+                document.removeEventListener(event, unlockAudio);
+            });
+        }
+
+        events.forEach(event => {
+            document.addEventListener(event, unlockAudio, { passive: true });
+        });
+
+        // Try load-time autoplay as a bonus
+        window.addEventListener('pageshow', () => {
+            audio.play().then(() => {
+                updateUI(true);
+                removeUnlockListeners();
+            }).catch(() => {
+                console.log('Awaiting user interaction for audio unlock');
+            });
+        });
     </script>
 </body>
 </html>
