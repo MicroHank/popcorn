@@ -419,7 +419,7 @@
         </a>
 
         <div class="footer-info">
-            <p>📍 潮州年街 - 我的爆米花攤位</p>
+            <p id="visitor-counter">讀取中...</p>
             <p>本網頁由 <span class="highlight">Gemini AI</span> 開發</p>
             <p>© 2026 Popcorn Team. All Rights Reserved.</p>
         </div>
@@ -528,8 +528,18 @@
 
         // Visitor Counter Tracking
         const GAS_URL = "https://script.google.com/macros/s/AKfycbz5qSfvk-8rtj-VUd66KIoWJtKkxKx5RzNOI6-bF0A6xvhu3rAqHgz6jAu96Bd-Mn8wpA/exec";
-        fetch(GAS_URL, { mode: 'no-cors' })
-            .catch(err => console.log('Counter tracking failed:', err));
+        fetch(GAS_URL)
+            .then(response => response.json())
+            .then(data => {
+                if (data.view_count) {
+                    document.getElementById('visitor-counter').textContent = `📊 網頁載入次數: ${data.view_count} 次`;
+                }
+            })
+            .catch(err => {
+                console.log('Counter tracking failed:', err);
+                // If it fails (e.g. CORS), we hide the temporary "reading" status
+                document.getElementById('visitor-counter').style.display = 'none';
+            });
 
         // Pageshow event for back/forward cache
         window.addEventListener('pageshow', () => {
