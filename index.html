@@ -526,6 +526,11 @@
             });
         });
 
+        // Visitor Counter Tracking
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbz5qSfvk-8rtj-VUd66KIoWJtKkxKx5RzNOI6-bF0A6xvhu3rAqHgz6jAu96Bd-Mn8wpA/exec";
+        fetch(GAS_URL, { mode: 'no-cors' })
+            .catch(err => console.log('Counter tracking failed:', err));
+
         // Pageshow event for back/forward cache
         window.addEventListener('pageshow', () => {
             if (!isPlaying) {
