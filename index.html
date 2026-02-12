@@ -211,7 +211,7 @@
             justify-content: center;
             cursor: pointer;
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
@@ -220,8 +220,22 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .music-toggle.playing .music-icon {
-            animation: rotate 3s linear infinite;
+        .music-toggle.playing {
+            background: var(--primary-gradient);
+            animation: rotate 10s linear infinite;
+        }
+
+        /* Nudge animation for when autoplay is blocked */
+        .music-toggle.nudge {
+            animation: pulse-nudge 2s infinite;
+            border: 2px solid #FF6B6B;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        @keyframes pulse-nudge {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
         }
 
         @keyframes rotate {
@@ -443,11 +457,14 @@
             }
         }
 
+        // Toggle music state (Play/Pause)
         function toggleMusic() {
             if (isPlaying) {
                 audio.pause();
                 updateUI(false);
             } else {
+                musicBtn.classList.remove('nudge');
+                audio.muted = false; // Always unmute when manually toggled
                 audio.play().then(() => {
                     updateUI(true);
                 }).catch(e => {
@@ -463,10 +480,11 @@
 
         // Robust Interaction Unlocker
         const unlockAudio = () => {
-            if (!isPlaying) {
+            if (!isPlaying || audio.muted) {
+                audio.muted = false;
                 audio.play().then(() => {
                     updateUI(true);
-                    // Successfully started, remove all unlock listeners
+                    musicBtn.classList.remove('nudge');
                     removeUnlockListeners();
                 }).catch(e => {
                     console.log('Still blocked or failed:', e);
@@ -486,14 +504,38 @@
             document.addEventListener(event, unlockAudio, { passive: true });
         });
 
-        // Try load-time autoplay as a bonus
-        window.addEventListener('pageshow', () => {
+        // Try load-time autoplay with Muted-Start Trick
+        window.addEventListener('load', () => {
+            // Step 1: Attempt normal play
             audio.play().then(() => {
                 updateUI(true);
                 removeUnlockListeners();
             }).catch(() => {
-                console.log('Awaiting user interaction for audio unlock');
+                // Step 2: Failed? Try muted play (Bypasses most browser blocks)
+                console.log('Normal autoplay blocked; trying muted-start trick...');
+                audio.muted = true;
+                audio.play().then(() => {
+                    console.log('Muted autoplay successful; music primed.');
+                    // Don't update UI to "playing" icon yet because it's silent,
+                    // or do so with a nudge to notify user
+                    musicBtn.classList.add('nudge');
+                }).catch(() => {
+                    console.log('Total autoplay block; awaiting user interaction.');
+                    musicBtn.classList.add('nudge');
+                });
             });
+        });
+
+        // Pageshow event for back/forward cache
+        window.addEventListener('pageshow', () => {
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    updateUI(true);
+                    removeUnlockListeners();
+                }).catch(() => {
+                    // Fail silently, interaction listener or nudge is already active
+                });
+            }
         });
     </script>
 </body>
